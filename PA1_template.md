@@ -23,7 +23,7 @@ What is mean total number of steps taken per day?
 ```r
 by.date = group_by(d,date)
 d1 = summarize(by.date,total_count=sum(steps))
-hist(d1$total_count,breaks=10,xlab = "Total number of steps per day")
+hist(d1$total_count,breaks=10,xlab = "Total number of steps per day",main="Frequency distribution of total number of steps per day.")
 ```
 
 ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
@@ -51,10 +51,13 @@ What is the average daily activity pattern?
 ```r
 by.interval = group_by(d,interval)
 d2 = summarise(by.interval, mean_over_days_for_interval=mean(steps,na.rm=TRUE))
-plot(d2$interval,d2$mean_over_days_for_interval,type='l')
+plot(d2$interval,d2$mean_over_days_for_interval,type='l',main="Mean steps per interval for all days",xlab="Interval",ylab="Mean number of steps")
 ```
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
+Which interval has the max average over all the days?
+
 
 ```r
 max_index = which(d2$mean_over_days_for_interval == max(d2$mean_over_days_for_interval))
@@ -67,14 +70,6 @@ d2[max_index,]
 ## 
 ##   interval mean_over_days_for_interval
 ## 1      835                    206.1698
-```
-
-```r
-max_index
-```
-
-```
-## [1] 104
 ```
 
 Imputing Missing Values
@@ -91,7 +86,7 @@ length(which(complete.cases(d) == FALSE))
 ## [1] 2304
 ```
 
-Lets fill in those NAs with a value that is the same as the mean of the following day.
+Lets fill in those NAs with a value that is the mean of daily interval means.
 
 
 ```r
@@ -102,10 +97,10 @@ new_d[is.na(d)] <- replacement_value
 
 by.date_new_d = group_by(new_d,date)
 d1_new = summarize(by.date_new_d,total_count=sum(steps))
-hist(d1_new$total_count,breaks=10)
+hist(d1_new$total_count,breaks=10,main="Frequency distribution of total number of steps per day.",xlab = "Total number of steps per day")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
 
 ```r
 mean(d1_new$total_count,na.rm = TRUE)
@@ -123,7 +118,8 @@ median(d1_new$total_count,na.rm = TRUE)
 ## [1] 10766.19
 ```
 
-Weekday things
+Are there differences in activity patterns between weekdays and weekends?
+=========================================================================
 
 
 ```r
@@ -142,4 +138,4 @@ xyplot(d_mean ~ interval|day_type,
            layout=c(1,2))
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 

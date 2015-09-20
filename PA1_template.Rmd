@@ -25,7 +25,7 @@ What is mean total number of steps taken per day?
 ```{r}
 by.date = group_by(d,date)
 d1 = summarize(by.date,total_count=sum(steps))
-hist(d1$total_count,breaks=10,xlab = "Total number of steps per day")
+hist(d1$total_count,breaks=10,xlab = "Total number of steps per day",main="Frequency distribution of total number of steps per day.")
 
 mean(d1$total_count,na.rm = TRUE)
 median(d1$total_count,na.rm = TRUE)
@@ -38,12 +38,15 @@ What is the average daily activity pattern?
 ```{r}
 by.interval = group_by(d,interval)
 d2 = summarise(by.interval, mean_over_days_for_interval=mean(steps,na.rm=TRUE))
-plot(d2$interval,d2$mean_over_days_for_interval,type='l')
+plot(d2$interval,d2$mean_over_days_for_interval,type='l',main="Mean steps per interval for all days",xlab="Interval",ylab="Mean number of steps")
+```
 
+Which interval has the max average over all the days?
+
+```{r}
 max_index = which(d2$mean_over_days_for_interval == max(d2$mean_over_days_for_interval))
 
 d2[max_index,]
-max_index
 ```
 
 Imputing Missing Values
@@ -55,7 +58,7 @@ Number of rows with missing values
 length(which(complete.cases(d) == FALSE))
 ```
 
-Lets fill in those NAs with a value that is the same as the mean of the following day.
+Lets fill in those NAs with a value that is the mean of daily interval means.
 
 ```{r}
 daily_mean = summarise(by.date,daily_mean=mean(steps,na.rm=TRUE))
@@ -65,14 +68,15 @@ new_d[is.na(d)] <- replacement_value
 
 by.date_new_d = group_by(new_d,date)
 d1_new = summarize(by.date_new_d,total_count=sum(steps))
-hist(d1_new$total_count,breaks=10)
+hist(d1_new$total_count,breaks=10,main="Frequency distribution of total number of steps per day.",xlab = "Total number of steps per day")
 
 mean(d1_new$total_count,na.rm = TRUE)
 median(d1_new$total_count,na.rm = TRUE)
 
 ```
 
-Weekday things
+Are there differences in activity patterns between weekdays and weekends?
+=========================================================================
 
 ```{r}
 new_d = mutate(new_d,day_of_week = weekdays(new_d$date,abbreviate = TRUE))
